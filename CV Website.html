@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>وبسایت رزومه شخصی</title>
+  <meta name="description" content="پرونده نمونه وب‌سایت شخصی واکنش‌گرا با HTML و CSS فقط" />
+  <style>
+    /* ========== CSS RESET (مختصر) ========== */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    img{max-width:100%;display:block;height:auto}
+    a{color:inherit;text-decoration:none}
+    :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+    /* ========== THEME ========== */
+    :root{
+      --bg:#0f1221;
+      --card:#151935;
+      --muted:#8e95a9;
+      --text:#e8ecf1;
+      --primary:#7c5cff;
+      --primary-600:#6b49ff;
+      --accent:#22d3ee;
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --radius:16px;
+      --shadow:0 10px 25px rgba(0,0,0,.25);
+      --container:1200px;
+    }
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Vazirmatn, "IRANSans", "Tahoma", sans-serif;
+      background: linear-gradient(180deg,#0d1020 0%, #0f1221 40%, #101434 100%);
+      color:var(--text);
+      line-height:1.75;
+    }
+    .container{width:min(100% - 32px, var(--container));margin-inline:auto}
+    .section{padding-block:72px}
+    .pill{display:inline-block;padding:.35rem .8rem;border-radius:999px;background:rgba(124,92,255,.12);color:#d8d4ff;border:1px solid rgba(124,92,255,.3)}
+
+    /* ========== HEADER / NAV ========== */
+    header{position:sticky;top:0;z-index:50;background:rgba(13,16,32,.6);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .brand .logo{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 180deg at 50% 50%, var(--primary), var(--accent), var(--primary));box-shadow:0 6px 16px rgba(124,92,255,.45)}
+    
+    /* Mobile menu (CSS-only checkbox hack) */
+    #menu-toggle{display:none}
+    .menu-btn{display:flex;flex-direction:column;gap:5px;width:36px;height:32px;cursor:pointer;align-items:center;justify-content:center}
+    .menu-btn span{display:block;width:22px;height:2px;background:#d7dbff;border-radius:2px;transition:.25s}
+    nav ul{list-style:none;display:flex;gap:18px;align-items:center}
+    nav a{padding:8px 12px;border-radius:10px;color:#cfd6ff;border:1px solid transparent}
+    nav a:hover{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.04)}
+
+    /* Mobile dropdown */
+    .nav-links{position:fixed;inset-inline:0;top:64px;display:none;flex-direction:column;background:rgba(15,18,33,.98);border-top:1px solid rgba(255,255,255,.06)}
+    .nav-links a{padding:14px 20px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.06)}
+
+    /* Toggle states */
+    #menu-toggle:checked + label .top{transform:translateY(7px) rotate(45deg)}
+    #menu-toggle:checked + label .mid{opacity:0}
+    #menu-toggle:checked + label .bot{transform:translateY(-7px) rotate(-45deg)}
+    #menu-toggle:checked ~ .nav-links{display:flex}
+
+    /* Desktop nav */
+    @media (min-width: 900px){
+      .menu-btn{display:none}
+      .nav-links{position:static;display:flex;background:transparent;border:none;flex-direction:row;gap:6px}
+      .nav-links a{border:none}
+    }
+
+    /* ========== HERO ========== */
+    .hero{display:grid;gap:32px;align-items:center}
+    @media (min-width: 900px){.hero{grid-template-columns:1.2fr .8fr}}
+    .hero h1{font-size:clamp(28px, 4vw, 44px);line-height:1.25;margin:0}
+    .hero p{color:var(--muted);margin:12px 0 24px}
+    .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top: 24px;}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03)}
+    .btn.primary{background:linear-gradient(90deg,var(--primary),var(--accent));border:none;color:#0b0f1f;font-weight:700}
+    .btn:hover{transform:translateY(-1px)}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .profile-wrap{position:relative}
+    .profile{border-radius:18px;aspect-ratio:1/1;object-fit:cover;border:6px solid rgba(255,255,255,.06)}
+    .status{position:absolute;bottom:12px;inset-inline-start:12px}
+
+    /* ========== ABOUT ========== */
+    .grid{display:grid;gap:20px}
+    @media (min-width: 900px){.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+    @media (min-width: 700px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+    .tile{padding:20px;border-radius:16px}
+    .tile h3{margin-top:0;font-size:18px}
+    .skills{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{padding:8px 12px;border-radius:10px;background:#11152b;border:1px solid rgba(255,255,255,.08);font-size:14px}
+
+    /* Progress bars */
+    .bar{height:10px;background:#0e1330;border-radius:999px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));width:60%}
+
+    /* ========== EXPERIENCE ========== */
+    .timeline{position:relative;padding-inline-start:18px}
+    .timeline::before{content:"";position:absolute;inset-inline-start:6px;top:0;bottom:0;width:2px;background:linear-gradient(var(--accent),var(--primary))}
+    .step{position:relative;margin-bottom:24px}
+    .step::before{content:"";position:absolute;inset-inline-start:-4px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(34,211,238,.15)}
+    .step .where{color:#cfe7ff;font-weight:600}
+    .step .when{color:var(--muted);font-size:14px}
+
+    /* ========== PROJECTS ========== */
+    .cards{display:grid;gap:16px}
+    @media (min-width: 700px){.cards{grid-template-columns:repeat(2, 1fr)}}
+    @media (min-width: 1050px){.cards{grid-template-columns:repeat(3, 1fr)}}
+    .project{overflow:hidden;transition:transform .2s}
+    .project:hover{transform:translateY(-4px)}
+    .project .cover{aspect-ratio:16/10;object-fit:cover;border-bottom:1px solid rgba(255,255,255,.1)}
+    .project .body{padding:16px}
+    .project .meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:14px}
+    .project .links{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .link{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:#0f1433;border:1px solid rgba(255,255,255,.1)}
+
+    /* ========== CONTACT ========== */
+    .contact-list{display:grid;gap:12px}
+    @media (min-width: 700px){.contact-list{grid-template-columns:repeat(3, 1fr)}}
+    .contact-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:#0f1433;border:1px solid rgba(255,255,255,.08)}
+
+    /* ========== FOOTER ========== */
+    footer{padding:28px 0;color:#9aa3c0;border-top:1px solid rgba(255,255,255,.08);background:#0d1127}
+
+    /* ========== UTILITIES ========== */
+    .muted{color:var(--muted)}
+    .space-s{height:12px}
+    .space-m{height:20px}
+    .space-l{height:32px}
+    .center{display:grid;place-items:center}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#10204a;border:1px solid rgba(255,255,255,.1)}
+    .badge .dot{width:9px;height:9px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(34,197,94,.15)}
+    .align-end{align-self:end}
+
+    /* Smooth scrolling for anchor links */
+    html{scroll-behavior:smooth}
+  </style>
+</head>
+<body>
+  <a href="#main" class="pill" style="position:absolute;inset-inline-start:8px;top:8px;z-index:60">پرش به محتوا</a>
+
+  <!-- ========== HEADER / NAV ========== -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <span>امیررضا مددی</span>
+      </div>
+
+      <input type="checkbox" id="menu-toggle" aria-label="باز و بسته کردن منو" />
+      <label for="menu-toggle" class="menu-btn" aria-hidden="true">
+        <span class="top"></span>
+        <span class="mid"></span>
+        <span class="bot"></span>
+      </label>
+
+      <nav class="nav-links" role="navigation" aria-label="منوی اصلی">
+        <ul class="container">
+          <li><a href="#home">خانه</a></li>
+          <li><a href="#about">درباره‌</a></li>
+          <li><a href="#experience">تجربه‌ها</a></li>
+          <li><a href="#projects">پروژه‌ها</a></li>
+          <li><a href="#contact">ارتباط</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ========== HOME ========== -->
+    <section id="home" class="section">
+      <div class="container hero">
+        <div>
+          <span class="pill">سلام! 👋</span>
+          <h1>من <strong>امیررضا مددی</strong> هستم؛ توسعه‌دهنده بازی های موبایل.</h1>
+          <div class="cta">
+            <a class="btn primary" href="#projects">مشاهده پروژه‌ها</a>
+            <a class="btn" href="#contact">تماس با من</a>
+          </div>
+        </div>
+        <div class="profile-wrap align-end">
+          <img class="profile card" src="Myself.jpg" alt="عکس پروفایل" />
+          <div class="status badge"><span class="dot" aria-hidden="true"></span> آماده همکاری فریلنس</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ABOUT ========== -->
+    <section id="about" class="section">
+      <div class="container grid cols-3">
+        <div class="tile card">
+          <h3>اطلاعات شخصی</h3>
+          <p class="muted">نام: امیررضا مددی<br/>شهر: تهران<br/>ایمیل: amirrezamadadi237@gmail.com</p>
+          <div class="space-s"></div>
+          <a class="btn" href="Amirreza_Madadi.pdf" download>دانلود رزومه (PDF)</a>
+        </div>
+        <div class="tile card">
+          <h3>علاقه‌مندی‌ها</h3>
+          <p class="muted">طراحی بازی، تجربه کاربری بازی، برنامه‌نویسی گیم‌پلی، یادگیری ماشین در بازی‌ها</p>
+          <div class="space-s"></div>
+          <div class="skills">
+            <span class="chip">Unity</span>
+            <span class="chip">Game Play</span>
+            <span class="chip">Design</span>
+            <span class="chip">UI/UX</span>
+            <span class="chip">Performance</span>
+          </div>
+        </div>
+        <div class="tile card">
+          <h3>مهارت‌ها</h3>
+          <p class="muted">C-sharp</p>
+          <div class="bar" aria-label="HTML/CSS"><span style="width: 90%"></span></div>
+          <div class="space-s"></div>
+          <p class="muted">Design Gameplay</p>
+          <div class="bar"><span style="width: 75%"></span></div>
+          <div class="space-s"></div>
+          <p class="muted">VFX</p>
+          <div class="bar"><span style="width: 70%"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== EXPERIENCE ========== -->
+    <section id="experience" class="section">
+      <div class="container">
+        <span class="pill">تجربه‌های کاری و آکادمیک</span>
+        <div class="space-s"></div>
+        <div class="card" style="padding:22px">
+          <div class="timeline">
+            <div class="step">
+              <div class="where">Unity Developer — شرکت نردبان اندیشه فردا</div>
+              <div class="when">۱۴۰۳ تا کنون</div>
+              <p class="muted">توسعه بازی های موبایلی</p>
+            </div>
+            <div class="step">
+              <div class="where">دانشجوی کارشناسی — دانشگاه پلی تکنیک تهران</div>
+              <div class="when">۱۴۰۰ تا کنون</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PROJECTS ========== -->
+    <section id="projects" class="section">
+      <div class="container">
+        <span class="pill">پروژه‌ها</span>
+        <div class="space-m"></div>
+        <div class="cards">
+          <!-- Project 1 -->
+          <article class="project card">
+            <img class="cover" src="customer_curn.jpg" alt="کاور پروژه ۱" />
+            <div class="body">
+              <h3>Customer churn prediction</h3>
+              <p class="muted">پیشبینی ریزش مشتریان یک بانک با بررسی روی داده های پیشین مشتریان</p>
+              <div class="meta"><span>Python</span><span>README کامل</span></div>
+              <div class="links">
+                <a class="link" href="https://github.com/AmirrezaMadadi/Customer-Churn-Prediction" target="_blank" rel="noopener">GitHub</a>
+              </div>
+            </div>
+          </article>
+          <!-- Project 2 -->
+          <article class="project card">
+            <img class="cover" src="rainfall.jpg" alt="کاور پروژه ۲" />
+            <div class="body">
+              <h3>Rainfall prediction</h3>
+              <p class="muted">پیشبینی بارش باران با شرایطی خاص با بررسی روی داده های پیشین روز‌ها با آب و هوا های متفاوت</p>
+              <div class="meta"><span>Python</span><span>README کامل</span></div>
+              <div class="links">
+                <a class="link" href="https://github.com/AmirrezaMadadi/Rainfall-Prediction" target="_blank" rel="noopener">GitHub</a>
+              </div>
+            </div>
+          </article>
+          <!-- Project 3 -->
+          <article class="project card">
+            <img class="cover" src="loan.jpg" alt="کاور پروژه ۳" />
+            <div class="body">
+              <h3>Loan approval prediction</h3>
+              <p class="muted">بررسی اینکه آیا مشتریانی که درخواست وام از بانک دارند، تا چه اندازه ممکن است در بازپرداخت اقساط خود متعهد باشند.</p>
+              <div class="meta"><span>Python</span><span>README کامل</span></div>
+              <div class="links">
+                <a class="link" href="https://github.com/AmirrezaMadadi/loan-approval-prediction" target="_blank" rel="noopener">GitHub</a>
+              </div>
+            </div>
+          </article>
+          
+          <!-- برای افزودن پروژه‌های ۴ تا ۷، کارت‌های بیشتری با همین ساختار اضافه کنید. -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CONTACT ========== -->
+    <section id="contact" class="section">
+      <div class="container">
+        <span class="pill">ارتباط با من</span>
+        <div class="space-m"></div>
+        <div class="contact-list">
+          <a class="contact-item" href="mailto:you@example.com">
+            <strong>ایمیل</strong>
+            <span class="muted">amirrezamadadi237@gmail.com</span>
+          </a>
+          <a class="contact-item" href="https://github.com/AmirrezaMadadi" target="_blank" rel="noopener">
+            <strong>GitHub</strong>
+            <span class="muted">github.com/AmirrezaMadadi</span>
+          </a>
+          <a class="contact-item" href="https://www.linkedin.com/in/amirrezamadadi" target="_blank" rel="noopener">
+            <strong>LinkedIn</strong>
+            <span class="muted">linkedin.com/in/AmirrezaMadadi</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <span>© <span id="year">2025</span> — امیررضا مددی</span>
+      <span class="muted">All rights reserved</span>
+    </div>
+  </footer>
+</body>
+</html>
